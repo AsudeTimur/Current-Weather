@@ -3,32 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Map and Weather</title>
-    
-    <!-- Leaflet.js dosyasını ekleyin -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
-    <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
-    
-    <!-- Plotly kütüphanesi için gerekli CDN bağlantısı -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Current Weather</title> 
 </head>
 <body>
-    <h1>My Map and Weather</h1>
     
-    <h2>Hava Durumu</h2>
-    <form action="/" method="post">
-        <label for="city">Enter city:</label>
-        <input type="text" id="city" name="city">
-        <button type="submit">Submit</button>
-    </form>
-    <p>Şu anki sıcaklık: {{ temperature }}°C</p>
-    <p>Hava durumu: {{ weather_description }}</p>
-    
-    <!-- Harita için bir div -->
-    <div id="map" style="width: 800px; height: 600px;"></div>
-    
-    <!-- Plotly haritasını göstermek için div -->
-    <h2>Plotly Haritası</h2>
     <div>
         {{ plot | safe }}
     </div>
