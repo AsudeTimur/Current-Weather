@@ -1,6 +1,5 @@
 from flask import Flask, render_template
 import requests
-import plotly.graph_objs as go
 
 app = Flask(__name__)
 
@@ -21,32 +20,31 @@ def get_weather(city):
 
 def translate_weather_description(description):
     translations = {
-        'clear sky': 'açık hava',
-        'few clouds': 'az bulutlu',
-        'scattered clouds': 'parçalı bulutlu',
-        'broken clouds': 'kırık bulutlu',
-        'overcast clouds': 'kapalı bulutlu',
-        'light rain': 'hafif yağmur',
-        'moderate rain': 'orta şiddetli yağmur',
-        'heavy intensity rain': 'yoğun yağış',
-        'shower rain': 'sağanak yağış',
-        'thunderstorm': 'gök gürültülü fırtına',
-        'snow': 'kar',
-        'mist': 'sis',
-        'smoke': 'duman',
-        'haze': 'puslu',
-        'sand/ dust whirls': 'kum/ toz hortumu',
-        'fog': 'sisli',
-        'sand': 'kumlu',
-        'dust': 'tozlu',
-        'volcanic ash': 'volkanik kül',
-        'squalls': 'şiddetli fırtına',
-        'tornado': 'tornado'
-        # İhtiyacınıza göre diğer hava durumu terimlerini buraya ekleyebilirsiniz
+        'clear sky': 'Açık Hava',
+        'few clouds': 'Az Bulutlu',
+        'scattered clouds': 'Parçalı Bulutlu',
+        'broken clouds': 'Kırık Bulutlu',
+        'overcast clouds': 'Kapalı Bulutlu',
+        'light rain': 'Hafif Yağmur',
+        'moderate rain': 'Orta Şiddetli Yağmur',
+        'heavy intensity rain': 'Yoğun Yağış',
+        'shower rain': 'Sağanak Yağış',
+        'thunderstorm': 'Gök Gürültülü Fırtına',
+        'snow': 'Kar',
+        'mist': 'Sis',
+        'smoke': 'Duman',
+        'haze': 'Puslu',
+        'sand/ dust whirls': 'Kum/ Toz Hortumu',
+        'fog': 'Sisli',
+        'sand': 'Kumlu',
+        'dust': 'Tozlu',
+        'volcanic ash': 'Volkanik Kül',
+        'squalls': 'Şiddetli Fırtına',
     }
     return translations.get(description, description)
 
-def generate_weather_map():
+@app.route('/')
+def index():
     turkish_cities = [
         'Adana', 'Adıyaman', 'Afyonkarahisar', 'Ağrı', 'Amasya', 'Ankara', 'Antalya', 'Artvin', 'Aydın', 'Balıkesir',
         'Bilecik', 'Bingöl', 'Bitlis', 'Bolu', 'Burdur', 'Bursa', 'Çanakkale', 'Çankırı', 'Çorum', 'Denizli',
@@ -59,41 +57,19 @@ def generate_weather_map():
         'Düzce'
     ]
 
-    figure = go.Figure()
-
+    weather_data = []
     for city in turkish_cities:
-        temperature, weather_description, longitude, latitude = get_weather(city)
-        if temperature is not None and weather_description is not None:
-            figure.add_trace(go.Scattermapbox(
-                lat=[latitude],
-                lon=[longitude],
-                mode='markers',
-                marker=go.scattermapbox.Marker(
-                    size=10,
-                    color='blue',
-                    opacity=0.7
-                ),
-                text=f'{city}<br>Sıcaklık: {temperature}°C<br>Açıklama: {weather_description}',
-                name=city
-            ))
+        temperature, description, lon, lat = get_weather(city)
+        if temperature is not None:
+            weather_data.append({
+                'city': city,
+                'temperature': temperature,
+                'description': description,
+                'lon': lon,
+                'lat': lat
+            })
 
-    figure.update_layout(
-        title='Türkiye\'deki Şehirlerin Hava Durumu Haritası',
-        mapbox=dict(
-            style='carto-positron',
-            zoom=5,
-            center=dict(lat=39.9255, lon=32.8667)
-        ),
-        width=1400,
-        height=800
-    )
-
-    return figure
-
-@app.route('/')
-def index():
-    weather_map = generate_weather_map()
-    return render_template('index.html', plot=weather_map.to_html(full_html=False))
+    return render_template('index.html', weather_data=weather_data)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,20 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Current Weather</title> 
+    <title>Türkiye Hava Durumu Haritası</title>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%; 
+        }
+    </style>
 </head>
 <body>
-    
-    <div>
-        {{ plot | safe }}
-    </div>
+    <h1>Türkiye Hava Durumu Haritası</h1>
+    <div id="map"></div>
 
     <script>
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        function initMap() {
+            var turkeyCenter = { lat: 39.9334, lng: 32.8597 };
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: turkeyCenter,
+                zoom: 6 
+            });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
+            var weatherData = {{ weather_data | tojson }};
+
+            weatherData.forEach(function(cityData) {
+                var marker = new google.maps.Marker({
+                    position: { lat: cityData.lat, lng: cityData.lon },
+                    map: map,
+                    label: ''
+                });
+
+                var infoWindow = new google.maps.InfoWindow({
+                    content: '<h3>' + cityData.city + '</h3><p>Sıcaklık: ' + cityData.temperature + '°C</p><p>Açıklama: ' + cityData.description + '</p>'
+                });
+
+                marker.addListener('click', function() {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
     </script>
+
+    <!-- Google Haritalar API'sini yükleme -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fEYyzg5wifvhsh0i2_AQCWOYYAwFjpg&callback=initMap" async defer></script>
 </body>
 </html>
