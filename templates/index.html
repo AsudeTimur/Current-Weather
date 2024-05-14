@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türkiye Hava Durumu Haritası</title>
+    <title>Türkiye Hava Durumu Isı Haritası</title>
     <style>
         #map {
             height: 600px;
-            width: 100%; 
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <h1>Türkiye Hava Durumu Haritası</h1>
+    <h1>Türkiye Hava Durumu Isı Haritası</h1>
     <div id="map"></div>
 
     <script>
@@ -20,30 +20,27 @@
             var turkeyCenter = { lat: 39.9334, lng: 32.8597 };
             var map = new google.maps.Map(document.getElementById('map'), {
                 center: turkeyCenter,
-                zoom: 6 
+                zoom: 6
             });
 
             var weatherData = {{ weather_data | tojson }};
 
-            weatherData.forEach(function(cityData) {
-                var marker = new google.maps.Marker({
-                    position: { lat: cityData.lat, lng: cityData.lon },
-                    map: map,
-                    label: ''
-                });
-
-                var infoWindow = new google.maps.InfoWindow({
-                    content: '<h3>' + cityData.city + '</h3><p>Sıcaklık: ' + cityData.temperature + '°C</p><p>Açıklama: ' + cityData.description + '</p>'
-                });
-
-                marker.addListener('click', function() {
-                    infoWindow.open(map, marker);
-                });
+            var heatMapData = weatherData.map(function(cityData) {
+                return {
+                    location: new google.maps.LatLng(cityData.lat, cityData.lon),
+                    weight: cityData.temperature
+                };
             });
+
+            var heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatMapData
+            });
+
+            heatmap.setMap(map);
         }
     </script>
 
     <!-- Google Haritalar API'sini yükleme -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fEYyzg5wifvhsh0i2_AQCWOYYAwFjpg&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=visualization&callback=initMap" async defer></script>
 </body>
 </html>

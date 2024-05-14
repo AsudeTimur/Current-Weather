@@ -1,5 +1,8 @@
 from flask import Flask, render_template
 import requests
+from folium import plugins
+import folium
+import numpy as np
 
 app = Flask(__name__)
 
@@ -11,37 +14,11 @@ def get_weather(city):
     if response.status_code == 200:
         data = response.json()
         temperature = data['main']['temp']
-        weather_description = translate_weather_description(data['weather'][0]['description'])
         longitude = data['coord']['lon']
         latitude = data['coord']['lat']
-        return temperature, weather_description, longitude, latitude
+        return temperature, longitude, latitude
     else:
-        return None, None, None, None
-
-def translate_weather_description(description):
-    translations = {
-        'clear sky': 'Açık Hava',
-        'few clouds': 'Az Bulutlu',
-        'scattered clouds': 'Parçalı Bulutlu',
-        'broken clouds': 'Kırık Bulutlu',
-        'overcast clouds': 'Kapalı Bulutlu',
-        'light rain': 'Hafif Yağmur',
-        'moderate rain': 'Orta Şiddetli Yağmur',
-        'heavy intensity rain': 'Yoğun Yağış',
-        'shower rain': 'Sağanak Yağış',
-        'thunderstorm': 'Gök Gürültülü Fırtına',
-        'snow': 'Kar',
-        'mist': 'Sis',
-        'smoke': 'Duman',
-        'haze': 'Puslu',
-        'sand/ dust whirls': 'Kum/ Toz Hortumu',
-        'fog': 'Sisli',
-        'sand': 'Kumlu',
-        'dust': 'Tozlu',
-        'volcanic ash': 'Volkanik Kül',
-        'squalls': 'Şiddetli Fırtına',
-    }
-    return translations.get(description, description)
+        return None, None, None
 
 @app.route('/')
 def index():
@@ -59,17 +36,34 @@ def index():
 
     weather_data = []
     for city in turkish_cities:
-        temperature, description, lon, lat = get_weather(city)
+        temperature, lon, lat = get_weather(city)
         if temperature is not None:
             weather_data.append({
-                'city': city,
                 'temperature': temperature,
-                'description': description,
                 'lon': lon,
                 'lat': lat
             })
 
-    return render_template('index.html', weather_data=weather_data)
+    # Create a map centered at Turkey's coordinates
+    map = folium.Map(location=[39.9334, 32.8597], zoom_start=6)
+
+    # Create a HeatMap layer using temperature data
+    heat_data = [[data['lat'], data['lon'], data['temperature']] for data in weather_data]
+
+    # Normalize temperature data to range between 0 and 1
+    temperatures = [data['temperature'] for data in weather_data]
+    normalized_temperatures = np.interp(temperatures, (min(temperatures), max(temperatures)), (0, 1))
+
+    # Combine latitudes, longitudes, and normalized temperatures
+    heat_data_normalized = [[data[0], data[1], normalized_temperatures[i]] for i, data in enumerate(heat_data)]
+
+    # Create HeatMap with gradient
+    plugins.HeatMap(heat_data_normalized, gradient={0.2: 'blue', 0.4: 'cyan', 0.6: 'yellow', 1: 'red'}, radius=15).add_to(map)
+
+    # Save the map as HTML file
+    map.save('templates/heatmap.html')
+
+    return render_template('heatmap.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
