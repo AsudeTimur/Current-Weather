@@ -1,46 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Türkiye Hava Durumu</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye Hava Durumu Isı Haritası</title>
     <style>
         #map {
-            height: 100%;
-        }
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            height: 600px;
+            width: 100%;
         }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fEYyzg5wifvhsh0i2_AQCWOYYAwFjpg&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Türkiye Hava Durumu Isı Haritası</h1>
+    <div id="map"></div>
+
     <script>
         function initMap() {
+            var turkeyCenter = { lat: 39.9334, lng: 32.8597 };
             var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 6,
-                center: {lat: 39.9255, lng: 32.8667} // Türkiye'nin merkez noktası
+                center: turkeyCenter,
+                zoom: 6
             });
 
             var weatherData = {{ weather_data | tojson }};
-            
-            weatherData.forEach(function(city) {
-                var marker = new google.maps.Marker({
-                    position: {lat: city.latitude, lng: city.longitude},
-                    map: map,
-                    title: `${city.city}: ${city.temperature}°C, ${city.description}`
-                });
 
-                var infowindow = new google.maps.InfoWindow({
-                    content: `<strong>${city.city}</strong><br>Sıcaklık: ${city.temperature}°C<br>Açıklama: ${city.description}`
-                });
-
-                marker.addListener('click', function() {
-                    infowindow.open(map, marker);
-                });
+            var heatMapData = weatherData.map(function(cityData) {
+                return {
+                    location: new google.maps.LatLng(cityData.lat, cityData.lon),
+                    weight: cityData.temperature
+                };
             });
+
+            var heatmap = new google.maps.visualization.HeatmapLayer({
+                data: heatMapData
+            });
+
+            heatmap.setMap(map);
         }
     </script>
-</head>
-<body onload="initMap()">
-    <div id="map"></div>
+
+    <!-- Google Haritalar API'sini yükleme -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=visualization&callback=initMap" async defer></script>
 </body>
 </html>
