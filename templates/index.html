@@ -1,46 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Türkiye Hava Durumu</title>
+    <title>Türkiye Hava Durumu ve Isı Haritası</title>
     <style>
         #map {
-            height: 100%;
+            height: 90%;
+        }
+        #control-panel {
+            height: 10%;
+            text-align: center;
+            padding: 10px;
+            background-color: #f1f1f1;
         }
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
     </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fEYyzg5wifvhsh0i2_AQCWOYYAwFjpg&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fEYyzg5wifvhsh0i2_AQCWOYYAwFjpg&libraries=visualization&callback=initMap" async defer></script>
     <script>
+        let map, heatmap, markers = [], weatherData, infowindow;
+
         function initMap() {
-            var map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 6,
                 center: {lat: 39.9255, lng: 32.8667} // Türkiye'nin merkez noktası
             });
 
-            var weatherData = {{ weather_data | tojson }};
-            
+            weatherData = {{ weather_data | tojson }};
+            infowindow = new google.maps.InfoWindow();
+
             weatherData.forEach(function(city) {
+                var iconUrl = getWeatherIconUrl(city.description);
                 var marker = new google.maps.Marker({
                     position: {lat: city.latitude, lng: city.longitude},
                     map: map,
+                    icon: iconUrl,
                     title: `${city.city}: ${city.temperature}°C, ${city.description}`
                 });
 
-                var infowindow = new google.maps.InfoWindow({
-                    content: `<strong>${city.city}</strong><br>Sıcaklık: ${city.temperature}°C<br>Açıklama: ${city.description}`
-                });
-
                 marker.addListener('click', function() {
+                    infowindow.setContent(`<strong>${city.city}</strong><br>Sıcaklık: ${city.temperature}°C<br>Açıklama: ${city.description}`);
                     infowindow.open(map, marker);
                 });
+
+                markers.push(marker);
             });
+
+            map.addListener('mousemove', function(event) {
+                var latLng = event.latLng;
+                var nearestCity = getNearestCity(latLng, weatherData);
+                if (nearestCity) {
+                    showInfoWindow(nearestCity, latLng);
+                }
+            });
+        }
+
+        function toggleHeatmap() {
+            if (heatmap && heatmap.getMap()) {
+                heatmap.setMap(null); // Isı haritasını kapat
+                markers.forEach(marker => marker.setMap(map)); // Markerları geri getir
+            } else {
+                var heatMapData = weatherData.map(function(city) {
+                    return {
+                        location: new google.maps.LatLng(city.latitude, city.longitude),
+                        weight: city.temperature // Sıcaklığı ağırlık olarak kullanıyoruz
+                    };
+                });
+
+                heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatMapData,
+                    radius: 50 // Isı haritasının yarıçapı
+                });
+
+                heatmap.setMap(map);
+                markers.forEach(marker => marker.setMap(null)); // Markerları kaldır
+            }
+        }
+
+        function getNearestCity(latLng, weatherData) {
+            var minDist = Number.MAX_VALUE;
+            var nearestCity = null;
+            weatherData.forEach(function(city) {
+                var cityLocation = new google.maps.LatLng(city.latitude, city.longitude);
+                var dist = google.maps.geometry.spherical.computeDistanceBetween(latLng, cityLocation);
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestCity = city;
+                }
+            });
+            return nearestCity;
+        }
+
+        function showInfoWindow(city, latLng) {
+            var contentString = `<strong>${city.city}</strong><br>Sıcaklık: ${city.temperature}°C<br>Açıklama: ${city.description}`;
+            infowindow.setContent(contentString);
+            infowindow.setPosition(latLng);
+            infowindow.open(map);
+        }
+
+        function getWeatherIconUrl(weatherDescription) {
+            switch (weatherDescription) {
+                case 'açık hava':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-29.png'; // Güneşli
+                case 'az bulutlu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-28.png'; // Hafif bulutlu
+                case 'parçalı bulutlu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-25.png'; // Parçalı bulutlu
+                case 'kırık bulutlu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/hadiseler/pb.svg'; // Kırık bulutlu
+                case 'kapalı bulutlu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-23.png'; // Kapalı bulutlu
+                case 'hafif yağmur':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/61.png'; // Hafif yağmurlu
+                case 'orta şiddetli yağmur':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/80.png'; // Orta şiddetli yağmurlu
+                case 'yoğun yağış':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/65.png'; // Yoğun yağmurlu
+                case 'sağanak yağış':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/82.png'; // Sağanak yağmurlu
+                case 'gök gürültülü fırtına':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/91.png'; // Gök gürültülü fırtınalı
+                case 'kar':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/22.png'; // Karlı 
+                case 'sis':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/40.png'; // Sisli
+                case 'duman':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-41.png'; // Dumanlı
+                case 'puslu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/10.png'; // Puslu
+                case 'kum/ toz hortumu':
+                    return 'https://www.mgm.gov.tr/Images_Sys/icons/e_36x36t_png/-43.png'; // Kumlu/Tozlu hortum
+                case 'kumlu':
+                    return 'https://image.flaticon.com/icons/svg/1163/1163659.svg'; // Kumlu
+                case 'tozlu':
+                    return 'https://image.flaticon.com/icons/svg/1163/1163645.svg'; // Tozlu
+                case 'volkanik kül':
+                    return 'https://www.mgm.gov.tr/Images_Sys/hadiseler/dmn.svg'; // Volkanik kül
+                case 'şiddetli fırtına':
+                    return 'https://www.mgm.gov.tr/Images_Sys/hadiseler/gkr.svg'; // Şiddetli fırtınalı
+                case 'tornado':
+                    return 'https://image.flaticon.com/icons/svg/1163/1163652.svg'; // Tornado
+                default:
+                    return 'https://image.flaticon.com/icons/svg/1163/1163654.svg'; // Varsayılan ikon (Yeşil)
+            }
         }
     </script>
 </head>
 <body onload="initMap()">
     <div id="map"></div>
+    <div id="control-panel">
+        <button onclick="toggleHeatmap()">Isı Haritasını Göster/Gizle</button>
+    </div>
 </body>
 </html>

@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#ffc0cb", "id": 1, "label": "Adana", "shape": "dot", "title": "Adana"}, {"color": "#3da831", "id": 2, "label": "Ad\u0131yaman", "shape": "dot", "title": "Ad\u0131yaman"}, {"color": "#9a31a8", "id": 3, "label": "Afyonkarahisar", "shape": "dot", "title": "Afyonkarahisar"}, {"color": "#3155a8", "id": 4, "label": "A\u011fr\u0131", "shape": "dot", "title": "A\u011fr\u0131"}, {"color": "#eb4034", "id": 5, "label": "Aksaray", "shape": "dot", "title": "Aksaray"}, {"color": "#00bfff", "id": 6, "label": "Amasya", "shape": "dot", "title": "Amasya"}, {"color": "#ffc0cb", "id": 7, "label": "Ankara", "shape": "dot", "title": "Ankara"}, {"color": "#3da831", "id": 8, "label": "Antalya", "shape": "dot", "title": "Antalya"}, {"color": "#9a31a8", "id": 9, "label": "Ardahan", "shape": "dot", "title": "Ardahan"}, {"color": "#3155a8", "id": 10, "label": "Artvin", "shape": "dot", "title": "Artvin"}, {"color": "#eb4034", "id": 11, "label": "Ayd\u0131n", "shape": "dot", "title": "Ayd\u0131n"}, {"color": "#00bfff", "id": 12, "label": "Bal\u0131kesir", "shape": "dot", "title": "Bal\u0131kesir"}, {"color": "#ffc0cb", "id": 13, "label": "Bart\u0131n", "shape": "dot", "title": "Bart\u0131n"}, {"color": "#3da831", "id": 14, "label": "Batman", "shape": "dot", "title": "Batman"}, {"color": "#9a31a8", "id": 15, "label": "Bayburt", "shape": "dot", "title": "Bayburt"}, {"color": "#3155a8", "id": 16, "label": "Bilecik", "shape": "dot", "title": "Bilecik"}, {"color": "#eb4034", "id": 17, "label": "Bing\u00f6l", "shape": "dot", "title": "Bing\u00f6l"}, {"color": "#00bfff", "id": 18, "label": "Bitlis", "shape": "dot", "title": "Bitlis"}, {"color": "#ffc0cb", "id": 19, "label": "Bolu", "shape": "dot", "title": "Bolu"}, {"color": "#3da831", "id": 20, "label": "Burdur", "shape": "dot", "title": "Burdur"}, {"color": "#9a31a8", "id": 21, "label": "Bursa", "shape": "dot", "title": "Bursa"}, {"color": "#3155a8", "id": 22, "label": "\u00c7anakkale", "shape": "dot", "title": "\u00c7anakkale"}, {"color": "#eb4034", "id": 23, "label": "\u00c7ank\u0131r\u0131", "shape": "dot", "title": "\u00c7ank\u0131r\u0131"}, {"color": "#00bfff", "id": 24, "label": "\u00c7orum", "shape": "dot", "title": "\u00c7orum"}, {"color": "#ffc0cb", "id": 25, "label": "Denizli", "shape": "dot", "title": "Denizli"}, {"color": "#3da831", "id": 26, "label": "Diyarbak\u0131r", "shape": "dot", "title": "Diyarbak\u0131r"}, {"color": "#9a31a8", "id": 27, "label": "D\u00fczce", "shape": "dot", "title": "D\u00fczce"}, {"color": "#3155a8", "id": 28, "label": "Edirne", "shape": "dot", "title": "Edirne"}, {"color": "#eb4034", "id": 29, "label": "Elaz\u0131\u011f", "shape": "dot", "title": "Elaz\u0131\u011f"}, {"color": "#00bfff", "id": 30, "label": "Erzincan", "shape": "dot", "title": "Erzincan"}, {"color": "#ffc0cb", "id": 31, "label": "Erzurum", "shape": "dot", "title": "Erzurum"}, {"color": "#3da831", "id": 32, "label": "Eski\u015fehir", "shape": "dot", "title": "Eski\u015fehir"}, {"color": "#9a31a8", "id": 33, "label": "Gaziantep", "shape": "dot", "title": "Gaziantep"}, {"color": "#3155a8", "id": 34, "label": "Giresun", "shape": "dot", "title": "Giresun"}, {"color": "#eb4034", "id": 35, "label": "G\u00fcm\u00fc\u015fhane", "shape": "dot", "title": "G\u00fcm\u00fc\u015fhane"}, {"color": "#00bfff", "id": 36, "label": "Hakkari", "shape": "dot", "title": "Hakkari"}, {"color": "#ffc0cb", "id": 37, "label": "Hatay", "shape": "dot", "title": "Hatay"}, {"color": "#3da831", "id": 38, "label": "I\u011fd\u0131r", "shape": "dot", "title": "I\u011fd\u0131r"}, {"color": "#9a31a8", "id": 39, "label": "Isparta", "shape": "dot", "title": "Isparta"}, {"color": "#3155a8", "id": 40, "label": "\u0130stanbul", "shape": "dot", "title": "\u0130stanbul"}, {"color": "#eb4034", "id": 41, "label": "\u0130zmir", "shape": "dot", "title": "\u0130zmir"}, {"color": "#00bfff", "id": 42, "label": "Kahramanmara\u015f", "shape": "dot", "title": "Kahramanmara\u015f"}, {"color": "#ffc0cb", "id": 43, "label": "Karab\u00fck", "shape": "dot", "title": "Karab\u00fck"}, {"color": "#3da831", "id": 44, "label": "Karaman", "shape": "dot", "title": "Karaman"}, {"color": "#9a31a8", "id": 45, "label": "Kars", "shape": "dot", "title": "Kars"}, {"color": "#3155a8", "id": 46, "label": "Kastamonu", "shape": "dot", "title": "Kastamonu"}, {"color": "#eb4034", "id": 47, "label": "Kayseri", "shape": "dot", "title": "Kayseri"}, {"color": "#00bfff", "id": 48, "label": "K\u0131r\u0131kkale", "shape": "dot", "title": "K\u0131r\u0131kkale"}, {"color": "#ffc0cb", "id": 49, "label": "K\u0131rklareli", "shape": "dot", "title": "K\u0131rklareli"}, {"color": "#3da831", "id": 50, "label": "K\u0131r\u015fehir", "shape": "dot", "title": "K\u0131r\u015fehir"}, {"color": "#9a31a8", "id": 51, "label": "Kilis", "shape": "dot", "title": "Kilis"}, {"color": "#3155a8", "id": 52, "label": "Kocaeli", "shape": "dot", "title": "Kocaeli"}, {"color": "#eb4034", "id": 53, "label": "Konya", "shape": "dot", "title": "Konya"}, {"color": "#00bfff", "id": 54, "label": "K\u00fctahya", "shape": "dot", "title": "K\u00fctahya"}, {"color": "#ffc0cb", "id": 55, "label": "Malatya", "shape": "dot", "title": "Malatya"}, {"color": "#3da831", "id": 56, "label": "Manisa", "shape": "dot", "title": "Manisa"}, {"color": "#9a31a8", "id": 57, "label": "Mardin", "shape": "dot", "title": "Mardin"}, {"color": "#3155a8", "id": 58, "label": "Mersin", "shape": "dot", "title": "Mersin"}, {"color": "#eb4034", "id": 59, "label": "Mu\u011fla", "shape": "dot", "title": "Mu\u011fla"}, {"color": "#00bfff", "id": 60, "label": "Mu\u015f", "shape": "dot", "title": "Mu\u015f"}, {"color": "#ffc0cb", "id": 61, "label": "Nev\u015fehir", "shape": "dot", "title": "Nev\u015fehir"}, {"color": "#3da831", "id": 62, "label": "Ni\u011fde", "shape": "dot", "title": "Ni\u011fde"}, {"color": "#9a31a8", "id": 63, "label": "Ordu", "shape": "dot", "title": "Ordu"}, {"color": "#3155a8", "id": 64, "label": "Osmaniye", "shape": "dot", "title": "Osmaniye"}, {"color": "#eb4034", "id": 65, "label": "Rize", "shape": "dot", "title": "Rize"}, {"color": "#00bfff", "id": 66, "label": "Sakarya", "shape": "dot", "title": "Sakarya"}, {"color": "#ffc0cb", "id": 67, "label": "Samsun", "shape": "dot", "title": "Samsun"}, {"color": "#3da831", "id": 68, "label": "Siirt", "shape": "dot", "title": "Siirt"}, {"color": "#9a31a8", "id": 69, "label": "Sinop", "shape": "dot", "title": "Sinop"}, {"color": "#3155a8", "id": 70, "label": "Sivas", "shape": "dot", "title": "Sivas"}, {"color": "#eb4034", "id": 71, "label": "\u015eanl\u0131urfa", "shape": "dot", "title": "\u015eanl\u0131urfa"}, {"color": "#00bfff", "id": 72, "label": "\u015e\u0131rnak", "shape": "dot", "title": "\u015e\u0131rnak"}, {"color": "#ffc0cb", "id": 73, "label": "Tekirda\u011f", "shape": "dot", "title": "Tekirda\u011f"}, {"color": "#3da831", "id": 74, "label": "Tokat", "shape": "dot", "title": "Tokat"}, {"color": "#9a31a8", "id": 75, "label": "Trabzon", "shape": "dot", "title": "Trabzon"}, {"color": "#3155a8", "id": 76, "label": "Tunceli", "shape": "dot", "title": "Tunceli"}, {"color": "#eb4034", "id": 77, "label": "U\u015fak", "shape": "dot", "title": "U\u015fak"}, {"color": "#00bfff", "id": 78, "label": "Van", "shape": "dot", "title": "Van"}, {"color": "#ffc0cb", "id": 79, "label": "Yalova", "shape": "dot", "title": "Yalova"}, {"color": "#3da831", "id": 80, "label": "Yozgat", "shape": "dot", "title": "Yozgat"}, {"color": "#9a31a8", "id": 81, "label": "Zonguldak", "shape": "dot", "title": "Zonguldak"}]);
+                  edges = new vis.DataSet([{"from": 1, "to": 37}, {"from": 1, "to": 58}, {"from": 1, "to": 62}, {"from": 1, "to": 64}, {"from": 2, "to": 29}, {"from": 2, "to": 33}, {"from": 2, "to": 42}, {"from": 2, "to": 55}, {"from": 2, "to": 71}, {"from": 3, "to": 20}, {"from": 3, "to": 32}, {"from": 3, "to": 39}, {"from": 3, "to": 54}, {"from": 3, "to": 77}, {"from": 4, "to": 38}, {"from": 4, "to": 45}, {"from": 4, "to": 78}, {"from": 5, "to": 47}, {"from": 5, "to": 50}, {"from": 5, "to": 53}, {"from": 5, "to": 61}, {"from": 5, "to": 62}, {"from": 6, "to": 24}, {"from": 6, "to": 67}, {"from": 6, "to": 70}, {"from": 6, "to": 74}, {"from": 6, "to": 80}, {"from": 7, "to": 19}, {"from": 7, "to": 23}, {"from": 7, "to": 43}, {"from": 7, "to": 48}, {"from": 7, "to": 50}, {"from": 8, "to": 20}, {"from": 8, "to": 39}, {"from": 9, "to": 10}, {"from": 9, "to": 45}, {"from": 10, "to": 31}, {"from": 10, "to": 45}, {"from": 10, "to": 65}, {"from": 11, "to": 25}, {"from": 11, "to": 41}, {"from": 11, "to": 56}, {"from": 11, "to": 59}, {"from": 12, "to": 21}, {"from": 12, "to": 22}, {"from": 12, "to": 56}, {"from": 13, "to": 19}, {"from": 13, "to": 23}, {"from": 13, "to": 27}, {"from": 13, "to": 43}, {"from": 13, "to": 46}, {"from": 13, "to": 81}, {"from": 14, "to": 17}, {"from": 14, "to": 18}, {"from": 14, "to": 26}, {"from": 14, "to": 57}, {"from": 14, "to": 60}, {"from": 14, "to": 68}, {"from": 14, "to": 72}, {"from": 15, "to": 30}, {"from": 15, "to": 31}, {"from": 15, "to": 35}, {"from": 15, "to": 65}, {"from": 15, "to": 75}, {"from": 15, "to": 76}, {"from": 16, "to": 19}, {"from": 16, "to": 21}, {"from": 16, "to": 27}, {"from": 16, "to": 32}, {"from": 16, "to": 40}, {"from": 16, "to": 52}, {"from": 16, "to": 54}, {"from": 16, "to": 66}, {"from": 16, "to": 79}, {"from": 17, "to": 26}, {"from": 17, "to": 29}, {"from": 17, "to": 30}, {"from": 17, "to": 31}, {"from": 17, "to": 60}, {"from": 17, "to": 76}, {"from": 18, "to": 60}, {"from": 18, "to": 68}, {"from": 18, "to": 72}, {"from": 18, "to": 78}, {"from": 19, "to": 27}, {"from": 19, "to": 32}, {"from": 19, "to": 43}, {"from": 19, "to": 52}, {"from": 19, "to": 66}, {"from": 19, "to": 81}, {"from": 20, "to": 25}, {"from": 20, "to": 39}, {"from": 20, "to": 77}, {"from": 21, "to": 32}, {"from": 21, "to": 40}, {"from": 21, "to": 52}, {"from": 21, "to": 54}, {"from": 21, "to": 66}, {"from": 21, "to": 79}, {"from": 22, "to": 73}, {"from": 23, "to": 24}, {"from": 23, "to": 43}, {"from": 23, "to": 46}, {"from": 23, "to": 48}, {"from": 23, "to": 80}, {"from": 24, "to": 46}, {"from": 24, "to": 48}, {"from": 24, "to": 67}, {"from": 24, "to": 74}, {"from": 24, "to": 80}, {"from": 25, "to": 39}, {"from": 25, "to": 59}, {"from": 25, "to": 77}, {"from": 26, "to": 29}, {"from": 26, "to": 57}, {"from": 26, "to": 60}, {"from": 26, "to": 76}, {"from": 27, "to": 32}, {"from": 27, "to": 43}, {"from": 27, "to": 52}, {"from": 27, "to": 66}, {"from": 27, "to": 81}, {"from": 28, "to": 49}, {"from": 28, "to": 73}, {"from": 29, "to": 30}, {"from": 29, "to": 55}, {"from": 29, "to": 76}, {"from": 30, "to": 35}, {"from": 30, "to": 75}, {"from": 30, "to": 76}, {"from": 31, "to": 60}, {"from": 31, "to": 65}, {"from": 32, "to": 52}, {"from": 32, "to": 54}, {"from": 32, "to": 66}, {"from": 32, "to": 79}, {"from": 33, "to": 37}, {"from": 33, "to": 42}, {"from": 33, "to": 51}, {"from": 33, "to": 64}, {"from": 33, "to": 71}, {"from": 34, "to": 35}, {"from": 34, "to": 63}, {"from": 34, "to": 75}, {"from": 35, "to": 65}, {"from": 35, "to": 75}, {"from": 35, "to": 76}, {"from": 36, "to": 72}, {"from": 36, "to": 78}, {"from": 37, "to": 42}, {"from": 37, "to": 51}, {"from": 37, "to": 64}, {"from": 38, "to": 45}, {"from": 39, "to": 77}, {"from": 40, "to": 52}, {"from": 40, "to": 66}, {"from": 40, "to": 73}, {"from": 40, "to": 79}, {"from": 41, "to": 56}, {"from": 42, "to": 51}, {"from": 42, "to": 55}, {"from": 42, "to": 64}, {"from": 43, "to": 46}, {"from": 43, "to": 81}, {"from": 44, "to": 53}, {"from": 44, "to": 58}, {"from": 46, "to": 69}, {"from": 47, "to": 50}, {"from": 47, "to": 61}, {"from": 47, "to": 62}, {"from": 47, "to": 80}, {"from": 48, "to": 50}, {"from": 48, "to": 80}, {"from": 49, "to": 73}, {"from": 50, "to": 61}, {"from": 50, "to": 62}, {"from": 50, "to": 80}, {"from": 51, "to": 64}, {"from": 52, "to": 66}, {"from": 52, "to": 79}, {"from": 54, "to": 77}, {"from": 55, "to": 71}, {"from": 55, "to": 76}, {"from": 57, "to": 68}, {"from": 58, "to": 62}, {"from": 58, "to": 64}, {"from": 60, "to": 68}, {"from": 61, "to": 62}, {"from": 61, "to": 80}, {"from": 63, "to": 67}, {"from": 63, "to": 74}, {"from": 65, "to": 75}, {"from": 66, "to": 79}, {"from": 66, "to": 81}, {"from": 67, "to": 69}, {"from": 67, "to": 74}, {"from": 68, "to": 72}, {"from": 68, "to": 78}, {"from": 70, "to": 74}, {"from": 72, "to": 78}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
