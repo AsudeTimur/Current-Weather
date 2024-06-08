@@ -43,12 +43,24 @@ pip install requests
 
 # Proje Geliştirilirken Hangi Teknolojilerden Yararlanıldı
 
-* HTML: Kullanıcı arayüzünü oluşturmak için
+* HTML&CSS: Temel yapı ve stil için
 * Python: Sunucu tarafı geliştirme için
+* JavaScript: Dinamkik bir web sayfası oluşturmak için
 * OpenWeatherMap API: Hava durumu verilerini almak için
 * Google Maps API: Harita entegrasyonu için
+* MongoDB: API'den hava durumu verilerini tutmak için
 
-# Projeye Eklemek İstedikleriniz
+# Proje Ekran Görüntüleri
+1. Hava Durumu:
+<img src="screenshots/HavaDurumuHaritası.png" alt="Hava Durumu Haritası" width="50%">
+
+2. Hava Bilgisi:
+<img src="screenshots/HavaDurumuBilgisi.png" alt="Hava Durumu Bilgisi" width="50%">
+
+1. Hava Durumu:
+<img src="screenshots/IsiHaritası.png" alt="Isı Haritası" width="50%">
+
+# Projeye Eklemek İstediklerimiz
 
 * Rüzgar haritası: Anlık rüzgar hızlarını ve yönlerini görsel olarak sunan harita
 * Yağış haritası: Anlık yağış miktarını ve dağılımını gösteren harita
