@@ -50,15 +50,23 @@ pip install requests
 * Google Maps API: Harita entegrasyonu için
 * MongoDB: API'den hava durumu verilerini tutmak için
 
+# Proje Poster
+
+![HavaDurumuPoster](https://github.com/Current-Weather/Current-Weather/assets/94250544/e1c10e47-5798-42ef-a087-c64ce11fa3e7)
+
+# Graphical Abstract
+
+![Hava Durumu Verisi Çekme pdf](https://github.com/Current-Weather/Current-Weather/assets/94250544/9e0ba50c-d7ee-41c6-97df-8cae969df1c5)
+
 # Proje Ekran Görüntüleri
 1. Hava Durumu:
-<img src="screenshots/HavaDurumuHaritası.png" alt="Hava Durumu Haritası" width="50%">
+<img src="screenshots/HavaDurumuHaritası.png" alt="Hava Durumu Haritası" width="100%">
 
 2. Hava Bilgisi:
-<img src="screenshots/HavaDurumuBilgisi.png" alt="Hava Durumu Bilgisi" width="50%">
+<img src="screenshots/HavaDurumuBilgisi.png" alt="Hava Durumu Bilgisi" width="100%">
 
 1. Hava Durumu:
-<img src="screenshots/IsiHaritası.png" alt="Isı Haritası" width="50%">
+<img src="screenshots/IsiHaritası.png" alt="Isı Haritası" width="100%">
 
 # Projeye Eklemek İstediklerimiz
 
