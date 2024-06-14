@@ -52,7 +52,7 @@ pip install requests
 
 # Proje Poster
 
-![HavaDurumuPoster](https://github.com/Current-Weather/Current-Weather/assets/94250544/e1c10e47-5798-42ef-a087-c64ce11fa3e7)
+![HavaDurumuPoster](https://github.com/Current-Weather/Current-Weather/assets/94250544/7c4505b4-062c-4386-9b2f-c5ae9864374d)
 
 # Graphical Abstract
 
